@@ -17,5 +17,6 @@ export default new Router({
       name: 'CoursePage',
       component: CoursePage
     }
-  ]
+  ],
+  mode: 'history'
 })

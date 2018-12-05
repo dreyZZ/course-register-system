@@ -8,19 +8,23 @@
       <div class="card-body">
         <form class="form-inline" v-on:submit.prevent="onSubmit">
           <div class="form-group">
-            <label>ID</label>
-            <input v-model="courseData.course_id" type="text" class="form-control ml-sm-2 mr-sm-4 my-2"  required>
+            <label>Name</label>
+            <input v-model="courseData.name" type="text" class="form-control ml-sm-2 mr-sm-4 my-2" required>
           </div>
           <div class="form-group">
-            <label>Name</label>
-            <input v-model="courseData.course_name" type="text" class="form-control ml-sm-2 mr-sm-4 my-2" required>
+            <label>Branch</label>
+            <input v-model="courseData.branch" type="text" class="form-control ml-sm-2 mr-sm-4 my-2" required>
+          </div>
+          <div class="form-group">
+            <label>Day</label>
+            <input v-model="courseData.day" type="text" class="form-control ml-sm-2 mr-sm-4 my-2" required>
           </div>
           <div class="form-group">
             <label>Price</label>
-            <input v-model="courseData.course_price" type="text" class="form-control ml-sm-2 mr-sm-4 my-2" required>
+            <input v-model="courseData.cost" type="text" class="form-control ml-sm-2 mr-sm-4 my-2" required>
           </div>
           <div class="ml-auto text-right">
-            <button type="submit" class="btn btn-primary my-2">Add</button>
+          <button type="submit" class="btn btn-primary my-2">Add</button>
             
           </div>
         </form>
@@ -34,28 +38,23 @@
       <div class="card-body">
         <div class="table-responsive">
           <table class="table">
+            <!-- TODO: Burada Kurs fieldlarını listele -->
             <thead>
               <tr>
-                <th scope="col">
-                  Course ID
-                </th>
-                <th>
-                  Course Name
-                </th>
-                <th>
-                  Course Price
-                </th>
-                <th>
-                  Action
-                </th>
+                <th scope="col"> Course Name </th>
+                <th> Course Branch </th>
+                <th> Course Day </th>
+                <th> Course Price </th>
+                <th> Action </th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="course in sortedCourses" v-bind:key="course.id">
                 <template v-if="editId == course.id">
-                  <td><input v-model="editCourseData.course_id" type="text"></td>
-                  <td><input v-model="editCourseData.course_name" type="text"></td>
-                  <td><input v-model="editCourseData.course_price" type="text"></td>
+                  <td><input v-model="editCourseData.name" type="text"></td>
+                  <td><input v-model="editCourseData.branch" type="text"></td>
+                  <td><input v-model="editCourseData.day" type="text"></td>
+                  <td><input v-model="editCourseData.cost" type="text"></td>
                   <td>
                     <span class="icon">
                       <i  @click="onEditSubmit(course.id)" class="fa fa-check"></i>
@@ -66,17 +65,11 @@
                   </td>
                 </template>
                 <template v-else>
+                  <td> {{ course.name }} </td>
+                  <td> {{ course.branch }} </td>
+                  <td> {{ course.day }} </td>
+                  <td> {{ course.cost }} </td>
                   <td>
-                    {{course.course_id}}
-                  </td>
-                  <td>
-                    {{course.course_name}}
-                  </td>
-                  <td>
-                    {{course.course_price}}
-                  </td>
-                  <td>
-
                     <a href="#" class="icon">
                       <i v-on:click="onDelete(course.id)" class="fa fa-trash"></i>
                     </a>
@@ -95,13 +88,11 @@
                   </td>
                 </template>
               </tr>
-
             </tbody>
           </table>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -113,83 +104,64 @@ export default {
       editId: '',
       courseData: {
         'id' : '',
-        'course_id': '',
-        'course_name': '',
-        'course_price': ''
+        'name': '',
+        'branch': '',
+        'day': '',
+        'cost': ''
       },
       editCourseData: {
         'id' : '',
-        'course_id': '',
-        'course_name': '',
-        'course_price': ''
+        'name': '',
+        'branch': '',
+        'day': '',
+        'cost': ''
       },
       courses: []
     }
   },
   created() {
-    this.getCourses()
-    console.log(this.courses);
+    this.getCourses();
   },
   computed:{
     sortedCourses(){
       return this.courses.slice().sort((a,b)=>{
         return a.course_id - b.course_id
-      })
+      });
     }
   },
   methods: {
     getCourses() {
-      let mockCourses = [
-        {
-          course_id: 1,
-          course_name: "Math",
-          course_price: 30
-        },
-        {
-          course_id: 2,
-          course_name: "History",
-          course_price: 40
-        }
-      ]
+      let fetchedCourses = [];
 
-      let coursesArray = []
-      let i = 0
-      mockCourses.forEach((course)=>{
-        coursesArray.push(course)
-        coursesArray[i].id = course.course_id
-        i++
-      })
+      this.$http.get('http://localhost:8080/student/getCourseList')
+        .then((response) => {
+          // console.log("Response body:", response.body);
+          fetchedCourses = response.body;
+          // console.log("fetchedCourses:", fetchedCourses);
 
-      this.courses = coursesArray
+          let coursesArray = [];
+          let i = 0;
+          fetchedCourses.forEach((course)=>{
+            coursesArray.push(course);
+            coursesArray[i].id = course.course_id;
+            i++;
+          });
 
-
-      // db.collection('courses').get().then(querySnapshot =>{
-      //   const courses = []
-      //   // querySnapshot.forEach((doc)=>{
-      //   //   courses.push(doc.data())
-      //   // })
-      //   const coursesArray = []
-      //   let i = 0
-      //   querySnapshot.forEach((doc)=>{
-      //     coursesArray.push(doc.data())
-      //     coursesArray[i].id = doc.id
-      //     courses.push(coursesArray[i])
-      //     i++
-      //   })
-      //   // for(let key in querySnapshot.docs){
-      //   //   coursesArray.push(querySnapshot.docs[key].data())
-      //   //   coursesArray[key].id = querySnapshot.docs[key].id
-      //   //   courses.push(coursesArray[key])
-      //   // }
-      //   this.courses = courses
-      // })
+          this.courses = coursesArray;
+          console.log('this.courses: ', this.courses);
+        }).catch((err) => {
+          console.log(err);
+        });
     },
     onSubmit(){
-      // db.collection('courses').add(this.courseData).then(this.getCourses)
-      // this.courseData.course_id = ''
-      // this.courseData.course_name = ''
-      // this.courseData.course_price = ''
-
+      this.$http.post('http://localhost:8080/admin/course/add', this.courseData)
+        .then((response) => {
+          console.log('response: ', response);
+        }).catch((err) => {
+          console.log('err: ', err);
+        });
+      
+      this.getCourses();
     },
     // onDelete(course_id){
     //   db.collection('courses').where('course_id', '==', course_id).get().then(querySnapshot =>{

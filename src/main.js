@@ -8,6 +8,7 @@ import VueResource from 'vue-resource'
 Vue.use(VueResource);
 
 Vue.config.productionTip = false
+Vue.http.options.root = 'http://localhost:8080';
 
 /* eslint-disable no-new */
 new Vue({

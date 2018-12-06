@@ -38,7 +38,6 @@
       <div class="card-body">
         <div class="table-responsive">
           <table class="table">
-            <!-- TODO: Burada Kurs fieldlarını listele -->
             <thead>
               <tr>
                 <th scope="col"> Course Name </th>
@@ -51,7 +50,8 @@
             <tbody>
               <tr v-for="course in sortedCourses" v-bind:key="course.id">
                 <template v-if="editId == course.id">
-                  <td><input v-model="editCourseData.name" type="text"></td>
+                  <!-- REMOVED: EDIT FUNCTIONALITY -->
+                  <!-- <td><input v-model="editCourseData.name" type="text"></td>
                   <td><input v-model="editCourseData.branch" type="text"></td>
                   <td><input v-model="editCourseData.day" type="text"></td>
                   <td><input v-model="editCourseData.cost" type="text"></td>
@@ -62,7 +62,7 @@
                     <span class="icon">
                       <i  @click="onCancel" class="fa fa-ban"></i>
                     </span>
-                  </td>
+                  </td> -->
                 </template>
                 <template v-else>
                   <td> {{ course.name }} </td>
@@ -73,10 +73,12 @@
                     <a href="#" class="icon">
                       <i v-on:click="onDelete(course.id)" class="fa fa-trash"></i>
                     </a>
-                    <a href="#" class="icon">
+                    <!-- REMOVED: EDIT COURSE -->
+                    <!-- <a href="#" class="icon">
                       <i v-on:click="onEdit(course)" class="fa fa-pencil"></i>
-                    </a>
-                    <router-link 
+                    </a> -->
+                    <!-- REMOVED: ONE COURSE PAGE -->
+                    <!-- <router-link 
                     :to="{
                       name:'CoursePage', 
                       params:{id: course.id}
@@ -84,7 +86,7 @@
                     class="icon"
                     >
                       <i class="fa fa-eye"></i>
-                    </router-link>
+                    </router-link> -->
                   </td>
                 </template>
               </tr>
@@ -133,28 +135,30 @@ export default {
     getCourses() {
       let fetchedCourses = [];
 
-      this.$http.get('http://localhost:8080/student/getCourseList')
+      this.$http.get('student/getCourseList')
         .then((response) => {
-          // console.log("Response body:", response.body);
+          console.log("Response body:", response.body);
           fetchedCourses = response.body;
-          // console.log("fetchedCourses:", fetchedCourses);
 
-          let coursesArray = [];
-          let i = 0;
-          fetchedCourses.forEach((course)=>{
-            coursesArray.push(course);
-            coursesArray[i].id = course.course_id;
-            i++;
-          });
+          fetchedCourses.forEach((o, i) => o.indexId = i + 1);
 
-          this.courses = coursesArray;
-          console.log('this.courses: ', this.courses);
+          this.courses = fetchedCourses;
+
+          this.resetObject(this.courseData);
+          // console.log('this.courses: ', this.courses);
         }).catch((err) => {
           console.log(err);
         });
     },
+
+    resetObject(obj){
+      Object.keys(obj).forEach(key => {
+        obj[key] = "";
+      });
+    },
+
     onSubmit(){
-      this.$http.post('http://localhost:8080/admin/course/add', this.courseData)
+      this.$http.post('admin/course/add', this.courseData)
         .then((response) => {
           console.log('response: ', response);
         }).catch((err) => {
@@ -163,37 +167,30 @@ export default {
       
       this.getCourses();
     },
-    // onDelete(course_id){
-    //   db.collection('courses').where('course_id', '==', course_id).get().then(querySnapshot =>{
-    //     querySnapshot.forEach(doc=>{
-    //       doc.ref.delete().then(this.getCourses)
-    //     })
-    //   })
-    // }
+
     onDelete(id){
-      // db.collection('courses').doc(id).delete().then((data)=> {
-      //     this.getCourses()
-      // })
+      this.$http.post("admin/course/delete/" + id)
+        .then((response) => {
+          console.log('response: ', response);
+          this.getCourses();
+        }).catch((err) => {
+          console.log('err: ', err);
+        });
     },
     onEdit(course){
       this.editId = course.id
-      this.editCourseData.course_id = course.course_id
-      this.editCourseData.course_name = course.course_name
-      this.editCourseData.course_price = course.course_price
+      this.editCourseData.branch = course.branch
+      this.editCourseData.day = course.day
+      this.editCourseData.name = course.name
+      this.editCourseData.cost = course.cost
     },
+
     onCancel(){
-      this.editId = ''
-      this.editCourseData.course_id = ''
-      this.editCourseData.course_name = ''
-      this.editCourseData.course_price = ''
+      this.resetObject(this.editCourseData);
     },
+
     onEditSubmit (id){
-      // db.collection("courses").doc(id).set(this.editCourseData).then(
-      //   this.getCourses)
-      //   this.editId = ''
-      //   this.editCourseData.course_id = ''
-      //   this.editCourseData.course_name = ''
-      //   this.editCourseData.course_price = ''
+      
     }
   }
 }

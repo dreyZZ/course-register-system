@@ -7,9 +7,10 @@
 	        header
 	      </div>
 	      <div class="card-body">
-	      	<p >ID: {{courseId}}</p>
-	        <p >Course Name: {{courseName}}</p>
-	        <p >Course Price: ${{coursePrice}}</p>
+	        <p >Course Name: {{course.name}}</p>
+	        <p >Course Price: ${{course.cost}}</p>
+	        <p >Course Branch: ${{course.branch}}</p>
+	        <p >Course Day: ${{course.day}}</p>
 	        <button class="btn btn-success"> Buy Now</button>
 	        <router-link :to="'/'" class="btn btn-primary"> Back </router-link>
 	      </div>
@@ -26,41 +27,23 @@ export default {
   name: 'CoursePage',
   data () {
     return {
-    	courseId:'',
-    	courseName: '',
-    	coursePrice: '',
+    	course: {
+				id:'',
+    		branch: '',
+    		name: '',
+    		cost: '',
+				day: ''
+			},
     	loaded: false
     }
   },
   beforeCreate (){
-	  // db.collection('products').where(doc.id, '==' this.$route.params.id).then(querySnapshot =>{
-	  //   const products = []
-	  //   const productsArray = []
-	  //   let i = 0
-	  //   querySnapshot.forEach((doc)=>{
-	  //     productsArray.push(doc.data())
-	  //     productsArray[i].id = doc.id
-	  //     products.push(productsArray[i])
-	  //     i++
-	  //   })
-	  //   this.products = products
-	  // })
-	// var docRef = db.collection('products').doc(this.$route.params.id);
-	// docRef.get().then((doc)=> {
-	//     if (doc.exists) {
-	//         console.log("Document data:", doc.data().product_id);
-	//         this.productId = doc.data().product_id
-	//         this.productName = doc.data().product_name
-	//         this.productPrice = doc.data().product_price
-	//         this.loaded = true
-	//     } else {
-	//         // doc.data() will be undefined in this case
-	//         console.log("No such document!");
-	//     }
-	// }).catch(function(error) {
-	//     console.log("Error getting document:", error);
-	// });
-
+		this.$http.post('admin/course/add', this.courseData)
+			.then((response) => {
+				console.log('response: ', response);
+			}).catch((err) => {
+				console.log('err: ', err);
+			});
   }
 }
 </script>

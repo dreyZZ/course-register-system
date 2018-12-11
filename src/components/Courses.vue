@@ -6,7 +6,7 @@
         Add a new course
       </div>
       <div class="card-body">
-        <form class="form-inline" v-on:submit.prevent="onSubmit">
+        <form class="form-inline  " v-on:submit.prevent="onSubmit">
           <div class="form-group">
             <label>Name</label>
             <input v-model="courseData.name" type="text" class="form-control ml-sm-2 mr-sm-4 my-2" required>
@@ -161,11 +161,11 @@ export default {
       this.$http.post('admin/course/add', this.courseData)
         .then((response) => {
           console.log('response: ', response);
+          // setTimeout(check, 1000);
+          this.getCourses();
         }).catch((err) => {
           console.log('err: ', err);
         });
-      
-      this.getCourses();
     },
 
     onDelete(id){
@@ -196,7 +196,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h3{
   text-align: center;

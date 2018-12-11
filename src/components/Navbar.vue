@@ -8,13 +8,13 @@
 		  </button>
 		  <div class="collapse navbar-collapse" id="navbarNav">
 		    <ul class="navbar-nav">
-		      <li class="nav-item active">
-		        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+		      <li class="nav-item" :class="{ active: ac_courses }">
+		        <a class="nav-link" href="/courses">Courses <span class="sr-only">(current)</span></a>
 		      </li>
-		      <li class="nav-item">
-		        <a class="nav-link" href="/courses">Courses</a>
+		      <li class="nav-item" :class="{ active: ac_students }">
+		        <a class="nav-link" href="/students">Students</a>
 		      </li>
-		      <li class="nav-item">
+		      <li class="nav-item" :class="{ active: ac_teachers }">
 		        <a class="nav-link" href="/teachers">Teachers</a>
 		      </li>
 		    </ul>
@@ -30,7 +30,21 @@ export default {
   data () {
     return {
     }
-  }
+	},
+	computed: {
+		ac_courses(){
+			return this.$route.path == "/courses"
+		},
+		ac_students(){
+			return this.$route.path == "/students"
+		},
+		ac_teachers(){
+			return this.$route.path == "/teachers"
+		}
+	},
+	created(){
+		console.log('this.$route.path: ', this.$route.path);
+	}
 }
 </script>
 

@@ -137,7 +137,7 @@ export default {
 
       this.$http.get('student/getCourseList')
         .then((response) => {
-          console.log("Response body:", response.body);
+          // console.log("Response body:", response.body);
           fetchedCourses = response.body;
 
           fetchedCourses.forEach((o, i) => o.indexId = i + 1);
@@ -160,7 +160,7 @@ export default {
     onSubmit(){
       this.$http.post('admin/course/add', this.courseData)
         .then((response) => {
-          console.log('response: ', response);
+          // console.log('response: ', response);
           // setTimeout(check, 1000);
           this.getCourses();
         }).catch((err) => {
@@ -171,7 +171,7 @@ export default {
     onDelete(id){
       this.$http.post("admin/course/delete/" + id)
         .then((response) => {
-          console.log('response: ', response);
+          // console.log('response: ', response);
           this.getCourses();
         }).catch((err) => {
           console.log('err: ', err);
@@ -197,15 +197,15 @@ export default {
 </script>
 
 <style scoped>
-h3{
-  text-align: center;
-  margin-top: 30px;
-  margin-bottom: 20px;
-}
-.icon{
-  margin-right: 10px;
-}
-.icon i{
-  cursor: pointer;
-}
+  h3{
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 20px;
+  }
+  .icon{
+    margin-right: 10px;
+  }
+  .icon i{
+    cursor: pointer;
+  }
 </style>

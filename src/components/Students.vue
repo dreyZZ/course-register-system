@@ -69,6 +69,9 @@
               <td> {{ student.debt }}</td>
               <td>
                 <a href="#" class="icon">
+                  <i v-on:click="makeRequest(student.id)" class="fa fa-arrow-circle-right"></i>
+                </a>
+                <a href="#" class="icon">
                   <i v-on:click="onDelete(student.id)" class="fa fa-trash"></i>
                 </a>
               </td>
@@ -98,6 +101,17 @@
       }
     },
     methods: {
+      makeRequest(){
+        this.$http.post('makeRequest?studentId=' + studentId + '&courseId=' + courseId + '&teacherId=' + teacherId)
+          .then(res => {
+            console.log("res: ", res);
+          })
+          .catch(err => {
+            console.log("err: ", err);
+          })
+          
+        
+      },  //Make Request by Student
       getStudents() {
         let fetchedStudents = [];
 

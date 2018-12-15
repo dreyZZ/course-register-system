@@ -69,7 +69,7 @@
               <td> {{ student.debt }}</td>
               <td>
                 <a href="#" class="icon">
-                  <i v-on:click="makeRequest(student.id)" class="fa fa-arrow-circle-right"></i>
+                  <i v-on:click="showRequestForm(student.id)" class="fa fa-arrow-circle-right"></i>
                 </a>
                 <a href="#" class="icon">
                   <i v-on:click="onDelete(student.id)" class="fa fa-trash"></i>
@@ -78,6 +78,19 @@
             </tr>
             </tbody>
           </table>
+          <form id="requestForm" v-if="requestState">
+            <select v-model="requestData.teacherId">
+              <option v-for="teacher in teachers" v-bind:value="teacher.id">
+                {{ teacher.name }} {{ teacher.surname }}
+              </option>
+            </select>
+            <select v-model="requestData.courseId">
+              <option v-for="course in courses" v-bind:value="course.id">
+                {{ course.name }}
+              </option>
+            </select>
+            <button type="submit">Make Request</button>
+          </form>
         </div>
       </div>
     </div>
@@ -97,12 +110,22 @@
           name: "",
           surname: ""
         },
-        students: []
+        requestData: {
+          teacherId : "",
+          studentId : "",
+          courseId : ""
+        },
+        students: [],
+        teachers: [],
+        courses: [],
+        requestState: false
       }
     },
     methods: {
+
+      //Async
       makeRequest(){
-        this.$http.post('makeRequest?studentId=' + studentId + '&courseId=' + courseId + '&teacherId=' + teacherId)
+        this.$http.post('makeRequest?studentId=' + this.requestData.studentId + '&courseId=' + this.requestData.courseId + '&teacherId=' + this.requestData.teacherId)
           .then(res => {
             console.log("res: ", res);
           })
@@ -111,7 +134,7 @@
           })
           
         
-      },  //Make Request by Student
+      },  //Make Request for a Student
       getStudents() {
         let fetchedStudents = [];
 
@@ -129,6 +152,23 @@
           console.log(err);
         });
       },
+      getTeachers() {
+        this.$http.get('admin/teacher/list')
+          .then((response) => {
+            this.teachers = response.body;
+          }).catch((err) => {
+          console.log(err);
+        });
+      },
+      getCourses() {
+        this.$http.get('student/getCourseList')
+          .then((response) => {
+            this.courses = response.body;
+            this.resetObject(this.courseData);
+          }).catch((err) => {
+            console.log(err);
+        });
+      },
       addStudent() {
         this.studentData.debt = 0
 
@@ -138,11 +178,6 @@
             this.getStudents()
           }).catch((err) => {
           console.log(err)
-        })
-      },
-      resetObject(obj) {
-        Object.keys(obj).forEach(key => {
-          obj[key] = "";
         })
       },
       onDelete(id) {
@@ -155,9 +190,23 @@
         })
       },
 
+      //Utility
+      resetObject(obj) {
+        Object.keys(obj).forEach(key => {
+          obj[key] = "";
+        })
+      },
+
+      //UI
+      showRequestForm(studentId){
+        this.requestState = !this.requestState;
+        this.requestData.studentId = studentId;
+      }
     },
     created() {
       this.getStudents()
+      this.getTeachers()
+      this.getCourses()
     },
 
   }

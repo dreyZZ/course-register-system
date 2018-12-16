@@ -26,8 +26,8 @@
             </select>
           </div>
           <div class="form-group">
-            <label style="margin-right: 7px" for="sel1">Gender</label>
-            <select class="form-control" id="sel1" v-model="studentData.gender">
+            <label style="margin-right: 7px" for="sel2">Gender</label>
+            <select class="form-control" id="sel2" v-model="studentData.gender">
               <option disabled value="">Select</option>
               <option>Male</option>
               <option>Female</option>
@@ -68,29 +68,49 @@
               <td> {{ student.gender }}</td>
               <td> {{ student.debt }}</td>
               <td>
-                <a href="#" class="icon">
+                <a v-b-modal.modal1 v-b-tooltip.hover title="Make Course Request" href="#" class="icon">
                   <i v-on:click="showRequestForm(student.id)" class="fa fa-arrow-circle-right"></i>
                 </a>
-                <a href="#" class="icon">
+                <a href="#" v-b-tooltip.hover title="Delete the student" class="icon">
                   <i v-on:click="onDelete(student.id)" class="fa fa-trash"></i>
                 </a>
               </td>
             </tr>
             </tbody>
           </table>
-          <form id="requestForm" v-if="requestState">
-            <select v-model="requestData.teacherId">
-              <option v-for="teacher in teachers" v-bind:value="teacher.id">
-                {{ teacher.name }} {{ teacher.surname }}
-              </option>
-            </select>
-            <select v-model="requestData.courseId">
-              <option v-for="course in courses" v-bind:value="course.id">
-                {{ course.name }}
-              </option>
-            </select>
-            <button type="submit">Make Request</button>
-          </form>
+          <b-modal
+              id="modal1"
+              title="Make Course Request"
+              hide-footer
+          >
+            <form id="requestForm" v-on:submit.prevent="makeRequest">
+              <div class="form-group">
+                <b-form-select v-model="requestData.teacherId">
+                  <option value="null" disabled>Select the Teacher</option>
+                  <option v-for="teacher in teachers" v-bind:value="teacher.id">
+                    {{ teacher.name }} {{ teacher.surname }}
+                  </option>
+                </b-form-select>
+              </div>
+              <div class="form-group">
+                <b-form-select v-model="requestData.courseId">
+                  <option :value="null" disabled>Select the Course</option>
+                  <option v-for="course in courses" v-bind:value="course.id">
+                    {{ course.name }}
+                  </option>
+                </b-form-select>
+              </div>
+              <button class="btn btn-default" type="submit">Make Request</button>
+            </form>
+            <br>
+            <b-alert :show="alert.dismissCountDown"
+                     dismissible
+                     :variant="alert.variant"
+                     @dismissed="alert.dismissCountDown=0"
+                     >
+              Request made successfully
+            </b-alert>
+          </b-modal>
         </div>
       </div>
     </div>
@@ -111,25 +131,30 @@
           surname: ""
         },
         requestData: {
-          teacherId : "",
-          studentId : "",
-          courseId : ""
+          teacherId : null,
+          studentId : null,
+          courseId : null
         },
         students: [],
         teachers: [],
         courses: [],
-        requestState: false
+        alert: {
+          variant: "",
+          dismissCountDown: 0
+        }
       }
     },
     methods: {
 
       //Async
       makeRequest(){
-        this.$http.post('makeRequest?studentId=' + this.requestData.studentId + '&courseId=' + this.requestData.courseId + '&teacherId=' + this.requestData.teacherId)
+        this.$http.post('student/makeRequest?studentId=' + this.requestData.studentId + '&courseId=' + this.requestData.courseId + '&teacherId=' + this.requestData.teacherId)
           .then(res => {
+            this.showAlert('success');
             console.log("res: ", res);
           })
           .catch(err => {
+            this.showAlert('danger');
             console.log("err: ", err);
           })
           
@@ -199,8 +224,11 @@
 
       //UI
       showRequestForm(studentId){
-        this.requestState = !this.requestState;
         this.requestData.studentId = studentId;
+      },
+      showAlert(variant){
+        this.alert.variant = variant;
+        this.alert.dismissCountDown = 5;
       }
     },
     created() {

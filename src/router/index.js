@@ -28,6 +28,10 @@ export default new Router({
       path: '/course/:id',
       name: 'CoursePage',
       component: CoursePage
+    },
+    {
+      path: '/',
+      redirect: '/courses'
     }
   ],
   mode: 'history'

@@ -24,10 +24,6 @@
             <input v-model="teacherData.branch" type="text" class="form-control ml-sm-2 mr-sm-4 my-2" required>
           </div>
           <div class="form-group">
-            <label>Cost</label>
-            <input v-model="teacherData.cost" type="text" class="form-control ml-sm-2 mr-sm-4 my-2" required>
-          </div>
-          <div class="form-group">
             <label style="margin-right: 7px" for="sel1">Gender</label>
             <select class="form-control" id="sel1" v-model="teacherData.gender">
               <option disabled value="">Select</option>
@@ -59,7 +55,6 @@
               <th> Teacher Surname</th>
               <th> Teacher Balance</th>
               <th> Teacher Branch</th>
-              <th> Teacher Cost</th>
               <th> Teacher Gender</th>
             </tr>
             </thead>
@@ -69,7 +64,6 @@
               <td> {{ teacher.surname }}</td>
               <td> {{ teacher.balance }}</td>
               <td> {{ teacher.branch }}</td>
-              <td> {{ teacher.cost }}</td>
               <td> {{ teacher.gender }}</td>
               <td>
                 <a href="#" class="icon">
@@ -82,6 +76,13 @@
         </div>
       </div>
     </div>
+    <!--<b-modal-->
+        <!--id="modal1"-->
+        <!--title="Make Request"-->
+        <!--hide-footer-->
+    <!--&gt;-->
+      <!--<p></p>-->
+    <!--</b-modal>-->
   </div>
 </template>
 
@@ -94,12 +95,12 @@
           id: "",
           balance: "",
           branch: "",
-          cost: 0,
           gender: "",
           name: "",
           surname: ""
         },
-        teachers: []
+        teachers: [],
+
       }
     },
     methods: {
